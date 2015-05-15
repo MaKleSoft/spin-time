@@ -1,0 +1,119 @@
+<!--
+@element spin-time
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../spin-select/spin-select.html">
+
+<polymer-element name="spin-time" layout horizontal center center-justified>
+
+<template>
+    <style>
+        :host {
+            display: block;
+        }
+
+        spin-select {
+            width: 50px;
+            overflow: visible;
+        }
+
+        .minutes::after, .seconds::after {
+            content: ":";
+            display: block;
+            position: absolute;
+            height: 20px;
+            left: -2px;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        .ampm {
+            text-transform: uppercase;
+        }
+
+    </style>
+
+    <spin-select options="{{ hours }}" value="{{ hour }}" class="hours" repeat></spin-select>
+    <spin-select options="{{ minutes }}" value="{{ minute }}" class="minutes" repeat hidden?="{{ nomin }}"></spin-select>
+    <spin-select options="{{ seconds }}" value="{{ second }}" class="seconds" repeat hidden?="{{ nomin || nosec }}"></spin-select>
+    <spin-select options="['am', 'pm']" class="ampm" value="{{ period }}" on-select="{{ periodSelected }}" hidden?="{{ !ampm }}"></spin-select>
+
+</template>
+
+<script>
+(function(Polymer) {
+    'use strict';
+
+    function padNumber(n) {
+        return n < 10 ? '0' + n : n.toString();
+    }
+
+    Polymer({
+
+        publish: {
+            ampm: {
+                value: false,
+                reflect: true
+            },
+            nomin: {
+                value: false,
+                reflect: true
+            },
+            nosec: {
+                value: false,
+                reflect: true
+            },
+            step: 5,
+            hour: 0,
+            minute: 0,
+            second: 0
+        },
+
+        ready: function() {
+            this.ampmChanged();
+            this.stepChanged();
+            this.hourChanged();
+        },
+
+        ampmChanged: function() {
+            var hours = [];
+            for (var i = 0; i < 24; i++) {
+                hours.push({
+                    value: i,
+                    label: this.ampm ? padNumber((i % 12) || 12) : padNumber(i)
+                });
+            }
+
+            this.hours = hours;
+        },
+
+        stepChanged: function() {
+            var opts = [];
+            for (var i = 0; i < 60; i += this.step) {
+                opts.push({
+                    value: i,
+                    label: padNumber(i)
+                });
+            }
+            this.minutes = this.seconds = opts;
+        },
+
+        hourChanged: function() {
+            this.period = this.hour < 12 ? 'am' : 'pm';
+        },
+
+        periodSelected: function(e, opt) {
+            if (opt.value == 'am' && this.hour >= 12) {
+                this.hour -= 12;
+            } else if (opt.value == 'pm' && this.hour < 12) {
+                this.hour += 12;
+            }
+        }
+
+    });
+
+})(Polymer);
+</script>
+
+</polymer-element>
