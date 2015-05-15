@@ -37,8 +37,8 @@
     </style>
 
     <spin-select options="{{ hours }}" value="{{ hour }}" class="hours" repeat></spin-select>
-    <spin-select options="{{ minutes }}" value="{{ minute }}" class="minutes" repeat></spin-select>
-    <spin-select options="{{ seconds }}" value="{{ second }}" class="seconds" repeat></spin-select>
+    <spin-select options="{{ minutes }}" value="{{ minute }}" class="minutes" repeat hidden?="{{ nomin }}"></spin-select>
+    <spin-select options="{{ seconds }}" value="{{ second }}" class="seconds" repeat hidden?="{{ nomin || nosec }}"></spin-select>
 
 </template>
 
@@ -54,6 +54,14 @@
 
         publish: {
             ampm: {
+                value: false,
+                reflect: true
+            },
+            nomin: {
+                value: false,
+                reflect: true
+            },
+            nosec: {
                 value: false,
                 reflect: true
             },
