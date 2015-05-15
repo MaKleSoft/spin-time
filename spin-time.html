@@ -4,18 +4,51 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../spin-select/spin-select.html">
 
-<polymer-element name="spin-time">
+<polymer-element name="spin-time" layout horizontal center center-justified>
 
 <template>
-    <style></style>
+    <style>
+        :host {
+            display: block;
+        }
+
+        spin-select {
+            width: 50px;
+        }
+
+        .minutes {
+            overflow: visible;
+        }
+
+        .minutes::after, .seconds::after {
+            content: ":";
+            display: block;
+            position: absolute;
+            height: 20px;
+            left: -2px;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        > div {
+            width: 0;
+        }
+    </style>
 
     <spin-select options="{{ hours }}" value="{{ hour }}" class="hours" repeat></spin-select>
+    <spin-select options="{{ minutes }}" value="{{ minute }}" class="minutes" repeat></spin-select>
+    <spin-select options="{{ seconds }}" value="{{ second }}" class="seconds" repeat></spin-select>
 
 </template>
 
 <script>
 (function(Polymer) {
     'use strict';
+
+    function padNumber(n) {
+        return n < 10 ? '0' + n : n.toString();
+    }
 
     Polymer({
 
@@ -24,11 +57,15 @@
                 value: false,
                 reflect: true
             },
-            hour: 0
+            step: 5,
+            hour: 0,
+            minute: 0,
+            second: 0
         },
 
         ready: function() {
             this.ampmChanged();
+            this.stepChanged();
         },
 
         ampmChanged: function() {
@@ -36,14 +73,26 @@
             for (var i = 0; i < 24; i++) {
                 hours.push({
                     value: i,
-                    label: this.ampm ? i % 12 : i
+                    label: this.ampm ? padNumber(i % 12) : padNumber(i)
                 });
             }
 
             this.hours = hours;
+        },
+
+        stepChanged: function() {
+            var opts = [];
+            for (var i = 0; i < 60; i += this.step) {
+                opts.push({
+                    value: i,
+                    label: padNumber(i)
+                });
+            }
+            this.minutes = this.seconds = opts;
         }
 
     });
+
 })(Polymer);
 </script>
 
