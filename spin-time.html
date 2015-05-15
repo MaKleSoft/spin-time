@@ -14,9 +14,6 @@
 
         spin-select {
             width: 50px;
-        }
-
-        .minutes {
             overflow: visible;
         }
 
@@ -31,14 +28,16 @@
             margin: auto;
         }
 
-        > div {
-            width: 0;
+        .ampm {
+            text-transform: uppercase;
         }
+
     </style>
 
     <spin-select options="{{ hours }}" value="{{ hour }}" class="hours" repeat></spin-select>
     <spin-select options="{{ minutes }}" value="{{ minute }}" class="minutes" repeat hidden?="{{ nomin }}"></spin-select>
     <spin-select options="{{ seconds }}" value="{{ second }}" class="seconds" repeat hidden?="{{ nomin || nosec }}"></spin-select>
+    <spin-select options="['am', 'pm']" class="ampm" value="{{ period }}" on-select="{{ periodSelected }}" hidden?="{{ !ampm }}"></spin-select>
 
 </template>
 
@@ -74,6 +73,7 @@
         ready: function() {
             this.ampmChanged();
             this.stepChanged();
+            this.hourChanged();
         },
 
         ampmChanged: function() {
@@ -81,7 +81,7 @@
             for (var i = 0; i < 24; i++) {
                 hours.push({
                     value: i,
-                    label: this.ampm ? padNumber(i % 12) : padNumber(i)
+                    label: this.ampm ? padNumber((i % 12) || 12) : padNumber(i)
                 });
             }
 
@@ -97,6 +97,18 @@
                 });
             }
             this.minutes = this.seconds = opts;
+        },
+
+        hourChanged: function() {
+            this.period = this.hour < 12 ? 'am' : 'pm';
+        },
+
+        periodSelected: function(e, opt) {
+            if (opt.value == 'am' && this.hour >= 12) {
+                this.hour -= 12;
+            } else if (opt.value == 'pm' && this.hour < 12) {
+                this.hour += 12;
+            }
         }
 
     });
