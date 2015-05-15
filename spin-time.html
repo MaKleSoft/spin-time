@@ -1,0 +1,50 @@
+<!--
+@element spin-time
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../spin-select/spin-select.html">
+
+<polymer-element name="spin-time">
+
+<template>
+    <style></style>
+
+    <spin-select options="{{ hours }}" value="{{ hour }}" class="hours" repeat></spin-select>
+
+</template>
+
+<script>
+(function(Polymer) {
+    'use strict';
+
+    Polymer({
+
+        publish: {
+            ampm: {
+                value: false,
+                reflect: true
+            },
+            hour: 0
+        },
+
+        ready: function() {
+            this.ampmChanged();
+        },
+
+        ampmChanged: function() {
+            var hours = [];
+            for (var i = 0; i < 24; i++) {
+                hours.push({
+                    value: i,
+                    label: this.ampm ? i % 12 : i
+                });
+            }
+
+            this.hours = hours;
+        }
+
+    });
+})(Polymer);
+</script>
+
+</polymer-element>
