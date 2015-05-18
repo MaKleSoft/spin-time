@@ -51,6 +51,10 @@
         return n < 10 ? '0' + n : n.toString();
     }
 
+    function isDef(val) {
+        return typeof val !== 'undefined' && val !== null;
+    }
+
     Polymer({
 
         publish: {
@@ -67,12 +71,19 @@
                 reflect: true
             },
             step: 5,
-            hour: 0,
-            minute: 0,
-            second: 0
+            hour: undefined,
+            minute: undefined,
+            second: undefined
         },
 
         ready: function() {
+            var now = new Date();
+            this.hour = isDef(this.hour) ? this.hour : now.getHours();
+            this.minute = isDef(this.minute) ? this.minute :
+                Math.round(now.getMinutes() / this.step) * this.step;
+            this.second = isDef(this.second) ? this.second :
+                Math.round(now.getSeconds() / this.step) * this.step;
+
             this.ampmChanged();
             this.stepChanged();
             this.hourChanged();
